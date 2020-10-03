@@ -61,42 +61,15 @@
                     </div>
                 </header>
                 <div>
-                    <div class="w-full sm:w-288 px-4 mx-auto mt-2 sm:mt-8 mb-2 sm:mb-8 flex items-center flex-col sm:flex-row">
-                        <div class="w-full flex items-center sm:w-auto flex-col sm:flex-row">
-                            <span class="w-full text-sm sm:text-base sm:w-auto sm:mr-4 sm:text-xl font-light cursor-default"> Personaje: </span>
-                            <span class="w-full sm:w-84 bg-white cursor-pointer">
-                                <div tabindex="0" class="multiselect">
-                                    <div class="multiselect__select"></div>
-                                    <select name="character" id="character"  tabindex="0" class="multiselect__tags multiselect__single">
-                                        <option value="cortazar">Julio Cortazar</option>
-                                        <option value="asmrtist">ASMRtist</option>
-                                    </select>
-                                </div>
-                            </span>
-                        </div>
-                        <div class="mt-2 sm:mt-0 w-full flex items-center sm:w-auto flex-col sm:flex-row">
-                            <span class="w-full text-sm sm:text-base sm:w-auto sm:ml-10 sm:mr-4 sm:text-xl font-light cursor-default"> Emoción: </span>
-                            <span class="w-full sm:w-48 bg-white cursor-pointer">
-                                <div tabindex="0" class="multiselect multiselect--disabled">
-                                    <div class="multiselect__select"></div>
-                                    <div class="multiselect__tags">
-                                        <div class="multiselect__tags-wrap" style="display: none;"></div>
-                                        <div class="multiselect__spinner" style="display: none;"></div>
-                                        <span class="multiselect__single">Neutra</span>
-                                    </div>
-                                </div>
-                            </span>
-                        </div>
-                    </div>
                     <div class="w-full sm:w-288 px-4 mx-auto mt-2 sm:mt-8 flex flex-col sm:flex-row items-center justify-start">
                         <div id="image" class="w-full sm:w-1/4 h-56 bg-transparent text-center flex items-center mr-2 cursor-pointer rounded-lg hover:opacity-100 hover:bg-gray-200">
-                            <img id="character-picture" src="./imgs/cortazar.jpg" class="w-auto h-auto mx-auto" style="max-width: 100.0%; max-height: 250px;" />
+                            <img id="character-picture" src="./imgs/cortazar.jpg" class="w-auto h-auto mx-auto" style="max-width: 100.0%; max-height: 250px;" />                            
                         </div>
                         <form id="gen-form" class="w-full sm:w-100% bg-transparent h-32 sm:h-56 flex flex-col items-center ml-2">
 
                                 <div class="w-full h-full">
-                                    <textarea  id="text" name="text" type="text" placeholder="Escribí algo acá. Luego presioná Generar para escuchar el audio resultante. (Máximo 280 caracteres)" maxlength="280" spellcheck="false" class="resize-none border rounded focus:outline-none focus:shadow-outline h-full w-full p-2 mt-4"></textarea>
-                                    <span class="float-right text-lg text-gray-600">280</span>
+                                    <textarea  id="text" name="text" type="text" placeholder="Escribí algo acá. Luego presioná Generar para escuchar el audio resultante. (Máximo 200 caracteres)" maxlength="200" spellcheck="false" class="resize-none border rounded focus:outline-none focus:shadow-outline h-full w-full p-2 mt-4"></textarea>
+                                    <span class="float-right text-lg text-gray-600">200</span>
                                 </div>
                                 <div class="flex items-center mt-12">
                                     <div data-original-title="null" class="has-tooltip">
@@ -114,13 +87,19 @@
                                 </div>
                         </form>
                     </div>
-                    <div class="hidden w-full sm:w-288 mx-auto mt-2 mb-8 sm:flex items-center justify-start">
-                        <div class="w-1/4 text-center text-sm">
-                            <span id="character-description" class="font-normal cursor-default">
-                                Voz generada a partir de entrenar una red neuronal artificial con 30 minutos de grabacion de Julio Cortazar.
+
+                    <div class="w-full sm:w-288 px-4 mx-auto mt-2 sm:mt-8 mb-2 sm:mb-8 flex items-center flex-col sm:flex-row">
+                        <div class="w-full flex items-center sm:w-auto flex-col sm:flex-row">
+                            <span class="w-full sm:w-84 bg-white cursor-pointer">
+                                <select name="character" id="character"  class="multiselect__tags multiselect__single">
+                                    <option value="cortazar">Julio Cortazar</option>
+                                    <option value="asmrtist">ASMRtist</option>
+                                    <option value="spinetta">Luis Alberto Spinetta</option>
+                                </select>
                             </span>
                         </div>
                     </div>
+
 
                     <div>
                         <div class="w-full sm:w-288 h-48 text-center px-4 mx-auto my-8 flex flex-col items-center justify-center text-gray-600 text-xl">
@@ -139,9 +118,8 @@
 <script type="text/javascript">
 
 var loaded_voice = 'cortazar';
-const pictures = {'cortazar':'./imgs/cortazar.jpg','asmrtist':'./imgs/asmr.jpg'}
-const urls = {'cortazar':'https://tts-asmr-ilfqxfroaq-uc.a.run.app/?text=','asmrtist':'https://tts-asmr-ilfqxfroaq-uc.a.run.app/?text='}
-const descriptions = {'cortazar':'Voz generada a partir de entrenar una red neuronal artificial con 30 minutos de grabacion de Julio Cortazar.','asmrtist':'Voice generated using a recording of 30 minutes of ASMR artists speaking.'}
+const pictures = {'cortazar':'./imgs/cortazar.jpg','asmrtist':'./imgs/asmr.jpg', 'spinetta': './imgs/spinetta.png'}
+const urls = {'cortazar':'https://tts-asmr-ilfqxfroaq-uc.a.run.app/?text=', 'asmrtist':'https://tts-asmr-ilfqxfroaq-uc.a.run.app/?text=','spinetta': 'https://tts-asmr-ilfqxfroaq-uc.a.run.app/?text='}
 
 function playerError(){
         alert("It failed! Try with a different text maybe :(")
@@ -157,7 +135,6 @@ player.onloadeddata = function() {
 
 $('#character').change(function(){
     loaded_voice = $(this).val();
-    $('#character-description').text(descriptions[loaded_voice]);
     $('#character-picture').attr('src', pictures[loaded_voice]);
 })
 

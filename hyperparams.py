@@ -31,13 +31,14 @@ class Hyperparams:
     c = 512 # == hidden units of SSRN
     attention_win_size = 3
 
+    max_N, max_T = 382, 522
+
     # data
     data = "/content/drive/My Drive/voces"
     test_data = '/content/texts.txt'
 
     # ENGLISH
     vocab = "PE abcdefghijklmnopqrstuvwxyz'.?" # P: Padding, E: EOS.
-    max_N, max_T = 180, 210
     logdir = "logdir/LJ01"
 
     # SPANISH

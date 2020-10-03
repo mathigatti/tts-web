@@ -45,7 +45,7 @@ def synthesize(sess, g, texts):
     if len(texts) > 0:
         L = load_text(texts)
         #print(L)
-        max_T = sum([len(text) for text in texts])*2
+        max_T = min(int(sum([len(text) for text in texts])*1.5), hp.max_T)
         # Feed Forward
         ## mel
         Y = np.zeros((len(L), hp.max_T, hp.n_mels), np.float32)
