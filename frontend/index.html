@@ -10,7 +10,7 @@
         <link rel="stylesheet" href="./styles/pro.min.css" media="all" />
         <link rel="stylesheet" href="./styles/pro-v4-font-face.min.css" media="all" />
         <link rel="stylesheet" href="./styles/pro-v4-shims.min.css" media="all" />
-        <title>Cortazar 2.0</title>
+        <title>Voces Artificiales</title>
         <meta name="viewport" content="width=device-width,user-scalable=no" />
         <meta name="description" content="Herramienta de conversión de texto a voz." />
         <link href="./styles/app.3cb910f5.css" rel="preload" as="style" />
@@ -92,18 +92,29 @@
                         <div class="w-full flex items-center sm:w-auto flex-col sm:flex-row">
                             <span class="w-full sm:w-84 bg-white cursor-pointer">
                                 <select name="character" id="character"  class="multiselect__tags multiselect__single">
-                                    <option value="cortazar">Julio Cortazar</option>
-                                    <option value="gibi">ASMRtist</option>
-                                    <option value="spinetta">Luis Alberto Spinetta</option>
-                                    <option value="kid">Kid</option>
+                                    <option value="cortazar">Julio Cortazar [ESP]</option>
+                                    <option value="gibi">ASMRtist [ENG]</option>
+                                    <option value="spinetta">Luis Alberto Spinetta [ESP]</option>
+                                    <option value="kid">Kid [ENG]</option>
                                 </select>
                             </span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="w-full sm:w-288 h-72 text-left px-4 mx-auto my-8 flex flex-col items-left justify-center text-gray-600 text-s">
+                            <p><b>Notas</b></br>
+                            - Mientras mas corto sea el texto menos tiempo tomará el procesamiento.</br>
+                            - Textos de 200 caracteres pueden toman unos 3 minutos en procesarse.</br>
+                            - Voces en ingles se indican con [ENG]. Voces en español con [ESP].</br>
+                            - Si un texto no es pronunciado de la forma deseada se puede reintentar </br>
+                            cambiando los signos de puntuación o escribiendolo ligeramente distinto.</br>
+                            </p>
                         </div>
                     </div>
 
 
                     <div>
-                        <div class="w-full sm:w-288 h-48 text-center px-4 mx-auto my-8 flex flex-col items-center justify-center text-gray-600 text-xl">
+                        <div class="w-full sm:w-288 h-36 text-center px-4 mx-auto my-8 flex flex-col items-center justify-center text-gray-600 text-xl">
                             <div class="text-sm text-gray-700 font-medium my-4 sm:mt-8">Desarrollado por <a href="http://mathigatti.com/about/" target="_blank">Mathias Gatti</a></div>
                         </div>
                     </div>
@@ -142,7 +153,7 @@ $(function () {
     $('#gen-form').submit(function (e) {
         e.preventDefault();
         data = getInputValues();
-        $('audio #source').attr('src', "https://tts-ilfqxfroaq-uc.a.run.app/?text="+data["text"] + "&model=" + loaded_voice);
+        $('audio #source').attr('src', "https://tts-ilfqxfroaq-uc.a.run.app/?text="+encodeURIComponent(data["text"]) + "&model=" + loaded_voice);
         $('#generate-voice').addClass("is-loading");
         $('#generate-voice').prop("disabled", true);
         $('audio').get(0).load();
