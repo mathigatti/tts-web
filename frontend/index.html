@@ -93,8 +93,9 @@
                             <span class="w-full sm:w-84 bg-white cursor-pointer">
                                 <select name="character" id="character"  class="multiselect__tags multiselect__single">
                                     <option value="cortazar">Julio Cortazar</option>
-                                    <option value="asmrtist">ASMRtist</option>
+                                    <option value="gibi">ASMRtist</option>
                                     <option value="spinetta">Luis Alberto Spinetta</option>
+                                    <option value="kid">Kid</option>
                                 </select>
                             </span>
                         </div>
@@ -118,8 +119,7 @@
 <script type="text/javascript">
 
 var loaded_voice = 'cortazar';
-const pictures = {'cortazar':'./imgs/cortazar.jpg','asmrtist':'./imgs/asmr.jpg', 'spinetta': './imgs/spinetta.png'}
-const urls = {'cortazar':'https://tts-asmr-ilfqxfroaq-uc.a.run.app/?text=', 'asmrtist':'https://tts-asmr-ilfqxfroaq-uc.a.run.app/?text=','spinetta': 'https://tts-asmr-ilfqxfroaq-uc.a.run.app/?text='}
+const pictures = {'cortazar':'./imgs/cortazar.jpg','gibi':'./imgs/asmr.jpg', 'spinetta': './imgs/spinetta.png', 'kid': './imgs/kid.png'}
 
 function playerError(){
         alert("It failed! Try with a different text maybe :(")
@@ -142,7 +142,7 @@ $(function () {
     $('#gen-form').submit(function (e) {
         e.preventDefault();
         data = getInputValues();
-        $('audio #source').attr('src', urls[loaded_voice]+data["text"]);
+        $('audio #source').attr('src', "https://tts-ilfqxfroaq-uc.a.run.app/?text="+data["text"] + "&model=" + loaded_voice);
         $('#generate-voice').addClass("is-loading");
         $('#generate-voice').prop("disabled", true);
         $('audio').get(0).load();
