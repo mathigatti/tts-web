@@ -15,80 +15,80 @@ from starlette.applications import Starlette
 from starlette.responses import FileResponse
 import uvicorn
 
-from utils import *
+from utils import spectrogram2wav
 from hyperparams import Hyperparams as hp
-from train import Graph
+from graph import Graph
 from data_load import load_text
 
-def start_model():
-    # Load graph
-    g = Graph(mode="synthesize"); print("Graph loaded")
+lang = {"cortazar":"es","gibi":"en","kid":"en","spinetta":"es"}
 
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
+def synthesize_full(model_name, texts):
+	tf.reset_default_graph()
+	g = Graph(lang=lang[model_name])
+	print("Graph loaded")
+	with tf.Session() as sess:
 
-    # Restore parameters
-    var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'Text2Mel')
-    saver1 = tf.train.Saver(var_list=var_list)
-    saver1.restore(sess, tf.train.latest_checkpoint(hp.logdir + "-1"))
-    print("Text2Mel Restored!")
+	    sess.run(tf.global_variables_initializer())
 
-    var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'SSRN') + \
-               tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, 'gs')
-    saver2 = tf.train.Saver(var_list=var_list)
-    saver2.restore(sess, tf.train.latest_checkpoint(hp.logdir + "-2"))
-    print("SSRN Restored!")
+	    # Restore parameters
+	    var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'Text2Mel')
+	    saver1 = tf.train.Saver(var_list=var_list)
+	    saver1.restore(sess, tf.train.latest_checkpoint(os.path.join("models",model_name, "logdir-1")))
+	    print("Text2Mel Restored!")
 
-    return sess, g
+	    var_list = tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, 'SSRN') + \
+	               tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, 'gs')
+	    saver2 = tf.train.Saver(var_list=var_list)
+	    saver2.restore(sess, tf.train.latest_checkpoint(os.path.join("models",model_name, "logdir-2")))
+	    print("SSRN Restored!")
 
-def synthesize(sess, g, texts):
-    if len(texts) > 0:
-        L = load_text(texts)
-        #print(L)
-        max_T = min(int(sum([len(text) for text in texts])*1.5), hp.max_T)
-        # Feed Forward
-        ## mel
-        Y = np.zeros((len(L), hp.max_T, hp.n_mels), np.float32)
-        prev_max_attentions = np.zeros((len(L),), np.int32)
-        for j in tqdm(range(max_T)):
-            _gs, _Y, _max_attentions, _alignments = \
-                sess.run([g.global_step, g.Y, g.max_attentions, g.alignments],
-                         {g.L: L,
-                          g.mels: Y,
-                          g.prev_max_attentions: prev_max_attentions})
-            Y[:, j, :] = _Y[:, j, :]
-            prev_max_attentions = _max_attentions[:, j]
+	    if len(texts) > 0:
+	        L = load_text(texts,lang[model_name])
+	        #print(L)
+	        max_T = min(int(sum([len(text) for text in texts])*1.5), hp.max_T)
+	        # Feed Forward
+	        ## mel
+	        Y = np.zeros((len(L), hp.max_T, hp.n_mels), np.float32)
+	        prev_max_attentions = np.zeros((len(L),), np.int32)
+	        for j in tqdm(range(max_T)):
+	            _gs, _Y, _max_attentions, _alignments = \
+	                sess.run([g.global_step, g.Y, g.max_attentions, g.alignments],
+	                         {g.L: L,
+	                          g.mels: Y,
+	                          g.prev_max_attentions: prev_max_attentions})
+	            Y[:, j, :] = _Y[:, j, :]
+	            prev_max_attentions = _max_attentions[:, j]
 
-        # Get magnitude
-        Z = sess.run(g.Z, {g.Y: Y})
+	        # Get magnitude
+	        Z = sess.run(g.Z, {g.Y: Y})
 
-        for i, mag in enumerate(Z):
-            print("Working on file", i+1)
-            wav = spectrogram2wav(mag)
-            write(f"{i}.wav", hp.sr, wav)
-            break
+	        for i, mag in enumerate(Z):
+	            print("Working on file", i+1)
+	            wav = spectrogram2wav(mag)
+	            write(f"{i}.wav", hp.sr, wav)
+	            break
+
 
 app = Starlette(debug=False)
-sess, g = start_model()
 
 # Needed to avoid cross-domain issues
 response_header = {
     'Access-Control-Allow-Origin': '*'
 }
 
-@app.route('/', methods=['GET', 'POST', 'HEAD'])
+@app.route('/', methods=['GET', 'POST'])
 async def homepage(request):
-    if request.method == 'GET':
-        params = request.query_params
-    elif request.method == 'POST':
-        params = await request.json()
+	if request.method == 'GET':
+	    params = request.query_params
+	elif request.method == 'POST':
+	    params = await request.json()
 
-    text = params.get('text', 'Please provide an input text so I can say it.')
-    synthesize(sess, g, [text])
-
-    path_to_file = "0.wav"
-    gc.collect()
-    return FileResponse(path_to_file, headers=response_header)
+	text = params.get('text', 'Hola')
+	model = params.get('model', 'cortazar')
+	synthesize_full(model, [text])
+	path_to_file = "0.wav"
+	gc.collect()
+	return FileResponse(path_to_file, headers=response_header)
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))

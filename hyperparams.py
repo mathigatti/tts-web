@@ -38,12 +38,11 @@ class Hyperparams:
     test_data = '/content/texts.txt'
 
     # ENGLISH
-    vocab = "PE abcdefghijklmnopqrstuvwxyz'.?" # P: Padding, E: EOS.
-    logdir = "logdir/LJ01"
+    #vocab = "PE abcdefghijklmnopqrstuvwxyz'.?" # P: Padding, E: EOS.
+    #logdir = "logdir/LJ01"
 
     # SPANISH
-    #vocab = u'''␀␃ !',-.:;?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz¡¿ÁÅÉÍÓÚáæèéëíîñóöúü—'''
-    #max_N, max_T = 382, 522
+    vocab = u'''␀␃ !',-.:;?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz¡¿ÁÅÉÍÓÚáæèéëíîñóöúü—'''
     #logdir = "logdir/logdir"
 
     # training scheme
@@ -52,3 +51,11 @@ class Hyperparams:
     #B = 32 # batch size
     B = 16 # batch size
     num_iterations = 2000000
+
+
+def lang2vocab(lang):
+    if lang == "es":
+        vocab = u'''␀␃ !',-.:;?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz¡¿ÁÅÉÍÓÚáæèéëíîñóöúü—'''
+    else:
+        vocab = "PE abcdefghijklmnopqrstuvwxyz'.?" # P: Padding, E: EOS.
+    return vocab

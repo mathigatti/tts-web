@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 #/usr/bin/python2
-'''
-By kyubyong park. kbpark.linguist@gmail.com. 
-https://www.github.com/kyubyong/dc_tts
-'''
 
 from __future__ import print_function
 
-from hyperparams import Hyperparams as hp
-from modules import *
 import tensorflow as tf
 
-def TextEnc(L, training=True):
+from hyperparams import Hyperparams as hp
+from hyperparams import lang2vocab
+from modules import *
+
+def TextEnc(L, training=True, lang="es"):
     '''
     Args:
       L: Text inputs. (B, N)
@@ -21,8 +19,9 @@ def TextEnc(L, training=True):
         V: Values. (B, N, d)
     '''
     i = 1
+
     tensor = embed(L,
-                   vocab_size=len(hp.vocab),
+                   vocab_size=len(lang2vocab(lang)),
                    num_units=hp.e,
                    scope="embed_{}".format(i)); i += 1
     tensor = conv1d(tensor,
