@@ -79,7 +79,7 @@
                                         </button>
                                     </div>
                                     <div>
-                                        <a id="download-voice" class="w-28 font-semibold py-2 px-3 text-sm border border-gray-400 rounded shadow mx-2 focus:outline-none bg-gray-300 text-gray-800 button is-link" href="#" download="audio.mp3">
+                                        <a id="download-voice" class="w-28 font-semibold py-2 px-3 text-sm border border-gray-400 rounded shadow mx-2 focus:outline-none bg-gray-300 text-gray-800 button is-link" href="">
                                             <div><i class="fa fa-download"></i></div>
                                         </a>
                                     </div>
@@ -156,6 +156,7 @@ function load_song(urlToSend) {
          link.download="audio.mp3";
          $('audio #source').attr('src', link.href);
          $('#download-voice').attr('href', link.href);
+         $('#download-voice').attr('download', 'audio.mp3');
          $('audio').get(0).load();
          $('audio').get(0).play();
          //link.click();
@@ -185,7 +186,7 @@ $(function () {
         $('#generate-voice').prop("disabled", true);
 
         data = getInputValues();
-        url = "http://127.0.0.1:8080/?text="+encodeURIComponent(data["text"]) + "&model=" + loaded_voice;
+        url = "https://tts-ilfqxfroaq-uc.a.run.app/?text="+encodeURIComponent(data["text"]) + "&model=" + loaded_voice;
         load_song(url);
     });
     $('#clear-text').click(function (e) {
