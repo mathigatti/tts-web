@@ -1,6 +1,6 @@
 FROM python:3.7.3-slim-stretch
 
-RUN apt-get -y update && apt-get -y install gcc && apt-get -y install libsndfile1-dev
+RUN apt-get -y update && apt-get -y install gcc && apt-get -y install libsndfile1-dev && apt-get -y install ffmpeg
 
 WORKDIR /
 COPY models /models
@@ -9,7 +9,7 @@ COPY models /models
 # This Dockerfile order allows Docker to cache the checkpoint layer
 # and improve build times if making changes.
 RUN pip3 install --upgrade pip
-RUN pip3 --no-cache-dir install sndfile librosa TensorFlow==1.15.4 tqdm scipy starlette uvicorn ujson aiofiles
+RUN pip3 --no-cache-dir install sndfile librosa TensorFlow==1.15.4 pydub tqdm scipy starlette uvicorn ujson aiofiles
 COPY *.py /
 
 # Clean up APT when done.

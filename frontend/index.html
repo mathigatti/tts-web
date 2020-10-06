@@ -17,6 +17,7 @@
         <link href="./styles/chunk-vendors.1c2cab8f.css" rel="preload" as="style" />
         <link href="./styles/chunk-vendors.1c2cab8f.css" rel="stylesheet" />
         <link href="./styles/app.3cb910f5.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <style type="text/styles">
             .resize-observer[data-v-b329ee4c] {
                 position: absolute;
@@ -65,7 +66,7 @@
                         <div id="image" class="w-full sm:w-1/4 h-56 bg-transparent text-center flex items-center mr-2 cursor-pointer rounded-lg hover:opacity-100 hover:bg-gray-200">
                             <img id="character-picture" src="./imgs/cortazar.jpg" class="w-auto h-auto mx-auto" style="max-width: 100.0%; max-height: 250px;" />                            
                         </div>
-                        <form id="gen-form" class="w-full sm:w-100% bg-transparent h-32 sm:h-56 flex flex-col items-center ml-2">
+                        <form id="gen-form" class="w-full sm:w-100% bg-transparent h-24 sm:h-56 flex flex-col items-center ml-2">
 
                                 <div class="w-full h-full">
                                     <textarea  id="text" name="text" type="text" placeholder="Escribí algo acá. Luego presioná Generar para escuchar el audio resultante. (Máximo 200 caracteres)" maxlength="200" spellcheck="false" class="resize-none border rounded focus:outline-none focus:shadow-outline h-full w-full p-2 mt-4"></textarea>
@@ -77,10 +78,15 @@
                                             <div>Generar <i class="fas fa-waveform ml-1" aria-hidden="true"></i></div>
                                         </button>
                                     </div>
+                                    <div>
+                                        <a id="download-voice" class="w-28 font-semibold py-2 px-3 text-sm border border-gray-400 rounded shadow mx-2 focus:outline-none bg-gray-300 text-gray-800 button is-link" href="#" download="audio.mp3">
+                                            <div><i class="fa fa-download"></i></div>
+                                        </a>
+                                    </div>
                                         <div data-original-title="null" class="has-tooltip">
 
                                         <audio controls>
-                                        <source id="source" src="" type="audio/x-wav" onerror="playerError()">>
+                                        <source id="source" src="" type="audio/mp3">
                                         Your browser does not support the audio element.
                                         </audio>
                                     </div>
@@ -93,21 +99,20 @@
                             <span class="w-full sm:w-84 bg-white cursor-pointer">
                                 <select name="character" id="character"  class="multiselect__tags multiselect__single">
                                     <option value="cortazar">Julio Cortazar [ESP]</option>
-                                    <option value="gibi">ASMRtist [ENG]</option>
                                     <option value="spinetta">Luis Alberto Spinetta [ESP]</option>
+                                    <option value="gibi">ASMRtist [ENG]</option>
                                     <option value="kid">Kid [ENG]</option>
                                 </select>
                             </span>
                         </div>
                     </div>
                     <div>
-                        <div class="w-full sm:w-288 h-72 text-left px-4 mx-auto my-8 flex flex-col items-left justify-center text-gray-600 text-s">
+                        <div class="w-full sm:w-288 h-90 text-left px-4 mx-auto my-8 flex flex-col items-left justify-center text-gray-600 text-s">
                             <p><b>Notas</b></br>
-                            - Mientras mas corto sea el texto menos tiempo tomará el procesamiento.</br>
-                            - Textos de 200 caracteres pueden toman unos 3 minutos en procesarse.</br>
-                            - Voces en ingles se indican con [ENG]. Voces en español con [ESP].</br>
-                            - Si un texto no es pronunciado de la forma deseada se puede reintentar </br>
-                            cambiando los signos de puntuación o escribiendolo ligeramente distinto.</br>
+                            - El tiempo de procesamiento puede extenderse algunos minutos.</br>
+                            - Si un texto no fue pronunciado correctamente podés intentar reescribirlo.</br>
+                            - Por ejemplo agregando signos de puntuación o separando una palabra en sílabas.</br>
+                            - Voces en inglés se indican con [ENG]. Voces en español con [ESP].</br>
                             </p>
                         </div>
                     </div>
@@ -132,32 +137,56 @@
 var loaded_voice = 'cortazar';
 const pictures = {'cortazar':'./imgs/cortazar.jpg','gibi':'./imgs/asmr.jpg', 'spinetta': './imgs/spinetta.png', 'kid': './imgs/kid.png'}
 
-function playerError(){
-        alert("It failed! Try with a different text maybe :(")
-        $('#generate-voice').removeClass("is-loading");
-        $('#generate-voice').prop("disabled", false);    
-}
-
-var player = $('audio').get(0);
-player.onloadeddata = function() {
-        $('#generate-voice').removeClass("is-loading");
-        $('#generate-voice').prop("disabled", false);
-};
-
 $('#character').change(function(){
     loaded_voice = $(this).val();
     $('#character-picture').attr('src', pictures[loaded_voice]);
 })
 
+$('#download-voice').attr('disabled','disabled');
+
+
+function load_song(urlToSend) {
+     var req = new XMLHttpRequest();
+     req.open("GET", urlToSend, true);
+     req.responseType = "blob";
+     req.onload = function (event) {
+         var blob = req.response;
+         var link=document.createElement('a');
+         link.href=window.URL.createObjectURL(blob);
+         link.download="audio.mp3";
+         $('audio #source').attr('src', link.href);
+         $('#download-voice').attr('href', link.href);
+         $('audio').get(0).load();
+         $('audio').get(0).play();
+         //link.click();
+     };
+     req.onreadystatechange = function(event) {
+        $('#generate-voice').removeClass("is-loading");
+        $('#generate-voice').prop("disabled", false);
+        $('#download-voice').attr('disabled', false);
+     }
+     req.send();
+}
+
+/*
+var player = $('audio').get(0);
+player.onloadeddata = function() {
+        $('#generate-voice').removeClass("is-loading");
+        $('#generate-voice').prop("disabled", false);
+        $('#download-voice').prop("disabled", false);
+};
+*/
+
+
 $(function () {
     $('#gen-form').submit(function (e) {
         e.preventDefault();
-        data = getInputValues();
-        $('audio #source').attr('src', "https://tts-ilfqxfroaq-uc.a.run.app/?text="+encodeURIComponent(data["text"]) + "&model=" + loaded_voice);
         $('#generate-voice').addClass("is-loading");
         $('#generate-voice').prop("disabled", true);
-        $('audio').get(0).load();
-        $('audio').get(0).play();
+
+        data = getInputValues();
+        url = "http://127.0.0.1:8080/?text="+encodeURIComponent(data["text"]) + "&model=" + loaded_voice;
+        load_song(url);
     });
     $('#clear-text').click(function (e) {
       $('#model-output').text('')

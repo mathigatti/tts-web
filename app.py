@@ -14,17 +14,22 @@ from tqdm import tqdm
 from starlette.applications import Starlette
 from starlette.responses import FileResponse
 import uvicorn
+from pydub import AudioSegment
 
 from utils import spectrogram2wav
 from hyperparams import Hyperparams as hp
 from graph import Graph
 from data_load import load_text
 
-lang = {"cortazar":"es","gibi":"en","kid":"en","spinetta":"es"}
+lang = {"cortazar":"es", "gibi":"en", "kid":"en", "spinetta":"es"}
+
+def clean_text(text):
+	return text.replace("ñ","ni") + "      "
 
 def synthesize_full(model_name, texts):
 	tf.reset_default_graph()
 	g = Graph(lang=lang[model_name])
+	texts = [clean_text(text) for text in texts]
 	print("Graph loaded")
 	with tf.Session() as sess:
 
@@ -68,12 +73,17 @@ def synthesize_full(model_name, texts):
 	            write(f"{i}.wav", hp.sr, wav)
 	            break
 
+def wav2mp3(path_to_file):
+	final_audio = AudioSegment.from_wav(file=path_to_file)
+	path_to_file = path_to_file.replace(".wav",".mp3")
+	final_audio.export(path_to_file, format="mp3")
+	return path_to_file	
 
 app = Starlette(debug=False)
 
 # Needed to avoid cross-domain issues
 response_header = {
-    'Access-Control-Allow-Origin': '*'
+    'Access-Control-Allow-Origin': '*',
 }
 
 @app.route('/', methods=['GET', 'POST'])
@@ -88,7 +98,7 @@ async def homepage(request):
 	synthesize_full(model, [text])
 	path_to_file = "0.wav"
 	gc.collect()
-	return FileResponse(path_to_file, headers=response_header)
+	return FileResponse(wav2mp3(path_to_file), headers=response_header)
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
