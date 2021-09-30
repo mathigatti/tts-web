@@ -8,8 +8,8 @@ COPY models /models
 # Make changes to the requirements/app here.
 # This Dockerfile order allows Docker to cache the checkpoint layer
 # and improve build times if making changes.
-RUN pip3 install --upgrade pip
-RUN pip3 --no-cache-dir install sndfile librosa TensorFlow==1.15.4 pydub tqdm scipy starlette uvicorn ujson aiofiles
+RUN python3 -m pip install --upgrade pip
+RUN python3 -m pip --no-cache-dir install librosa TensorFlow==1.15.4 pydub tqdm scipy starlette uvicorn ujson aiofiles
 COPY *.py /
 
 # Clean up APT when done.

@@ -21,7 +21,7 @@ from hyperparams import Hyperparams as hp
 from graph import Graph
 from data_load import load_text
 
-lang = {"cortazar":"es", "gibi":"en", "kid":"en", "spinetta":"es"}
+lang = {"cortazar":"es", "gibi":"en", "kid":"en", "spinetta":"es", "rapbot": "es"}
 
 def clean_text(text):
 	return text.replace("ñ","ni") + "      "
@@ -94,7 +94,7 @@ async def homepage(request):
 	    params = await request.json()
 
 	text = params.get('text', 'Hola')
-	model = params.get('model', 'cortazar')
+	model = params.get('model', 'rapbot')
 	synthesize_full(model, [text])
 	path_to_file = "0.wav"
 	gc.collect()
